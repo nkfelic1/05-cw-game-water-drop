@@ -2,6 +2,8 @@
 let gameRunning = false; // Keeps track of whether game is active or not
 let dropMaker; // Will store our timer that creates drops regularly
 let score = 0; // Player's score
+let timeLeft = 30; // Total game time in seconds
+let timerInterval; // Will store our countdown timer interval
 
 // Wait for button click to start the game
 document.getElementById("start-btn").addEventListener("click", startGame);
@@ -30,6 +32,21 @@ function startGame() {
   // Reset score and update display
   score = 0;
   document.getElementById("score").textContent = `${score}`;
+
+  // Update timer
+  timeLeft = 30;
+  document.getElementById("time").textContent = `${timeLeft}`;
+
+  // Countdown timer every second
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    document.getElementById("time").textContent = `${timeLeft}`;
+
+    // End game when time runs out
+    if (timeLeft <= 0) {
+      endGame();
+    }
+  }, 1000);
 }
 
 function createDrop() {
