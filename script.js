@@ -20,6 +20,18 @@ document.getElementById("game-container").addEventListener("click", function(eve
   }
 });
 
+// Handle clicks on bad drops using event delegation
+document.getElementById("game-container").addEventListener("click", function(event) {
+  if (event.target.classList.contains("bad-drop")) {
+    // Decrease score when a bad drop is clicked
+    score = Math.max(0, score - 1); // Prevent negative scores
+    document.getElementById("score").textContent = `${score}`;
+
+    // Remove the clicked bad drop from the game
+    event.target.remove();
+  }
+});
+
 function startGame() {
   // Prevent multiple games from running at once
   if (gameRunning) return;
@@ -28,6 +40,9 @@ function startGame() {
 
   // Create new drops every second (1000 milliseconds)
   dropMaker = setInterval(createDrop, 1000);
+
+  // Create new bad drops every 3 seconds (3000 milliseconds)
+  setInterval(createBadDrop, 3000);
 
   // Reset score and update display
   score = 0;
@@ -77,3 +92,49 @@ function createDrop() {
     drop.remove(); // Clean up drops that weren't caught
   });
 }
+
+function createBadDrop() {
+  // Create a new div element that will be our bad drop
+  const badDrop = document.createElement("div");
+  badDrop.className = "bad-drop";
+
+  // Make bad drops different sizes for visual variety
+  const initialSize = 60;
+  const sizeMultiplier = Math.random() * 0.8 + 0.5;
+  const size = initialSize * sizeMultiplier;
+  badDrop.style.width = badDrop.style.height = `${size}px`;
+
+  // Position the bad drop randomly across the game width
+  const gameWidth = document.getElementById("game-container").offsetWidth;
+  const xPosition = Math.random() * (gameWidth - 60);
+  badDrop.style.left = xPosition + "px";
+
+  // Make bad drops fall for 4 seconds
+  badDrop.style.animationDuration = "4s";
+
+  // Add the new bad drop to the game screen
+  document.getElementById("game-container").appendChild(badDrop);
+
+  // Remove bad drops that reach the bottom (weren't clicked)
+  badDrop.addEventListener("animationend", () => {
+    badDrop.remove(); // Clean up bad drops that weren't caught
+  });
+}
+
+function endGame() {
+  gameRunning = false;
+
+  // Stop creating new drops
+  clearInterval(dropMaker);
+  clearInterval(timerInterval);
+
+  // Remove all existing drops from the game area
+  const gameContainer = document.getElementById("game-container");
+  while (gameContainer.firstChild) {
+    gameContainer.removeChild(gameContainer.firstChild);
+  }
+
+  // Show final score to the player
+  alert(`Time's up! Your final score is: ${score}`);
+}
+
