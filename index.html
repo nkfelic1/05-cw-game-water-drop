@@ -7,19 +7,38 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<div class="hero">
+  <div class="hero-content">
+    <img src="img/cw_logo-horizontal.png" alt="charity: water logo" class="hero-logo">
+    <h1 class="hero-title">Make Every Drop Count</h1>
+    <p class="hero-subtitle">Play our Water Drop game and help raise awareness for clean water initiatives worldwide.</p>
+    <a href="https://www.charitywater.org/donate" class="hero-cta-button" target="_blank" rel="noopener noreferrer">Donate Now</a>
+  </div>
+</div>
+
     <div class="game-wrapper">
         <h1 class="game-title">Water Drop</h1>
-        <p class="game-tagline">Catch the good drops, avoid the bad ones!</p>
+        <p class="game-tagline">Collect water drops, avoid the polluted ones!</p>
         <div class="score-panel">
             <div class="score">Score: <span id="score">0</span></div>
             <div class="timer">Time: <span id="time">30</span>s</div>
             <button id="start-btn">Start Game</button>
+            <button id="reset-btn">Reset</button>
         </div>
         
         <div id="game-container">
         </div>
     </div>
     
-    <script src="script.js"></script>
+    <!-- Modal for end game message -->
+    <div id="endgame-modal" class="modal">
+      <div class="modal-content">
+        <span id="close-modal" class="close">&times;</span>
+        <h2 id="modal-title"></h2>
+        <p id="modal-message"></p>
+      </div>
+    </div>
+  <script src="confetti.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

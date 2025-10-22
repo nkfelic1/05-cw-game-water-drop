@@ -1,12 +1,32 @@
 // Variables to control game state
 let gameRunning = false; // Keeps track of whether game is active or not
 let dropMaker; // Will store our timer that creates drops regularly
+let badDropMaker; // Will store our timer for bad drops
 let score = 0; // Player's score
 let timeLeft = 30; // Total game time in seconds
 let timerInterval; // Will store our countdown timer interval
 
+// Winning and losing messages
+const winMessages = [
+  "Amazing! You made every drop count!",
+  "You’re a water hero! Great job!",
+  "Fantastic! Clean water for all!",
+  "You crushed it! Thanks for playing!",
+  "Outstanding! You’re making a difference!"
+];
+const loseMessages = [
+  "Keep trying! Every drop helps.",
+  "Almost there! Give it another go!",
+  "Don’t give up! Try again for a higher score.",
+  "You can do it! Play again to improve.",
+  "Not quite 20, but every effort counts!"
+];
+
 // Wait for button click to start the game
 document.getElementById("start-btn").addEventListener("click", startGame);
+
+// Add event listener for reset button
+document.getElementById("reset-btn").addEventListener("click", resetGame);
 
 // Handle clicks on water drops using event delegation
 document.getElementById("game-container").addEventListener("click", function(event) {
@@ -42,7 +62,7 @@ function startGame() {
   dropMaker = setInterval(createDrop, 1000);
 
   // Create new bad drops every 3 seconds (3000 milliseconds)
-  setInterval(createBadDrop, 3000);
+  badDropMaker = setInterval(createBadDrop, 3000);
 
   // Reset score and update display
   score = 0;
@@ -62,6 +82,28 @@ function startGame() {
       endGame();
     }
   }, 1000);
+}
+
+function resetGame() {
+  // Stop all intervals
+  clearInterval(dropMaker);
+  clearInterval(badDropMaker);
+  clearInterval(timerInterval);
+
+  // Remove all drops from the game area
+  const gameContainer = document.getElementById("game-container");
+  while (gameContainer.firstChild) {
+    gameContainer.removeChild(gameContainer.firstChild);
+  }
+
+  // Reset score and timer
+  score = 0;
+  document.getElementById("score").textContent = `${score}`;
+  timeLeft = 30;
+  document.getElementById("time").textContent = `${timeLeft}`;
+
+  // Allow game to be started again
+  gameRunning = false;
 }
 
 function createDrop() {
@@ -126,6 +168,7 @@ function endGame() {
 
   // Stop creating new drops
   clearInterval(dropMaker);
+  clearInterval(badDropMaker);
   clearInterval(timerInterval);
 
   // Remove all existing drops from the game area
@@ -134,7 +177,39 @@ function endGame() {
     gameContainer.removeChild(gameContainer.firstChild);
   }
 
-  // Show final score to the player
-  alert(`Time's up! Your final score is: ${score}`);
+  // Pick a message based on score
+  let message, title;
+  if (score >= 20) {
+    message = winMessages[Math.floor(Math.random() * winMessages.length)];
+    title = `You Win! 🎉`;
+    if (window.launchConfetti) window.launchConfetti();
+  } else {
+    message = loseMessages[Math.floor(Math.random() * loseMessages.length)];
+    title = `Try Again!`;
+  }
+
+  // Show modal with final score and message
+  showEndgameModal(title, `Final Score: ${score}<br>${message}`);
+}
+
+// Modal logic
+function showEndgameModal(title, message) {
+  const modal = document.getElementById('endgame-modal');
+  document.getElementById('modal-title').innerHTML = title;
+  document.getElementById('modal-message').innerHTML = message;
+  modal.style.display = 'block';
+}
+
+// Close modal on X click
+document.getElementById('close-modal').onclick = function() {
+  document.getElementById('endgame-modal').style.display = 'none';
+}
+
+// Close modal if user clicks outside modal content
+window.onclick = function(event) {
+  const modal = document.getElementById('endgame-modal');
+  if (event.target === modal) {
+    modal.style.display = 'none';
+  }
 }
 
